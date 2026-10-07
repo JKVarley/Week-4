@@ -2,10 +2,13 @@
 // Run with Live Server. Uses p5 2.x (async setup, await loadImage).
 
 const FRAME_COUNT = 8;
+const SOUND_COUNT = 6;
+let soundIndex = 0;
+
 
 // one array holds all eight poses
 let frames = [];
-
+let sounds = [];
 // which frame the click-controlled dancer shows
 let index = 0;
 
@@ -13,15 +16,7 @@ let index = 0;
 let xs = [200, 360, 520];
 let speeds = [4, 8, 16]; // draw-frames per pose: smaller = faster
 
-function preload() {
-  // load all eight poses with a loop and string concatenation
-  for (let i = 0; i < FRAME_COUNT; i++) {
-    const frameNumber = String(i + 1).padStart(2, "0");
-    frames.push(loadImage("dance_frames/dance_frame_" + frameNumber + ".png"));
-  }
-}
-
-function setup() {
+async function setup() {
   const canvas = createCanvas(700, 420);
 
   // puts the canvas inside <div id="sketch-holder"> in index.html
@@ -29,7 +24,21 @@ function setup() {
 
   textFont("monospace");
   textSize(14);
+
+  // load all eight poses with a loop and string concatenation
+  for (let i = 0; i < FRAME_COUNT; i++) {
+    const frameNumber = String(i + 1).padStart(2, "0");
+    frames.push(await loadImage("dance_frames/dance_frame_" + frameNumber + ".png"));
+  
+  
+  
+  }
+  
+  for (let i = 0; i < SOUND_COUNT; i++) {
+    sounds.push(await loadSound("JazzSounds/sound" + i + ".mp3"));
+  }
 }
+
 
 function draw() {
   background(240);
@@ -54,4 +63,9 @@ function draw() {
 // advance the index, wrapping at the end
 function mousePressed() {
   index = (index + 1) % frames.length;
-}
+  
+  userStartAudio(); // browsers block sound until the user clicks; this switches it on
+  sounds[soundIndex].play();
+  soundIndex = (soundIndex + 1) % sounds.length;
+
+  }
