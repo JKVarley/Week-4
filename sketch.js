@@ -1,41 +1,57 @@
+// IAT 806 · Lab 03 starter: the dancers from Week 3, ready for your website.
+// Run with Live Server. Uses p5 2.x (async setup, await loadImage).
+
+const FRAME_COUNT = 8;
+
+// one array holds all eight poses
 let frames = [];
-let myAge = 10;
-let myName = "Kyle";
-let myStudentsAges = [];
+
+// which frame the click-controlled dancer shows
+let index = 0;
+
+// parallel arrays, one entry per animated dancer
+let xs = [200, 360, 520];
+let speeds = [4, 8, 16]; // draw-frames per pose: smaller = faster
 
 function preload() {
-  frames[0] = loadImage("dance_frames/dance_frame_01.png");
-  frames[1] = loadImage("dance_frames/dance_frame_02.png");
+  // load all eight poses with a loop and string concatenation
+  for (let i = 0; i < FRAME_COUNT; i++) {
+    const frameNumber = String(i + 1).padStart(2, "0");
+    frames.push(loadImage("dance_frames/dance_frame_" + frameNumber + ".png"));
+  }
 }
 
 function setup() {
-  createCanvas(800, 420);
+  const canvas = createCanvas(700, 420);
 
-  
+  // puts the canvas inside <div id="sketch-holder"> in index.html
+  canvas.parent("sketch-holder");
+
+  textFont("monospace");
+  textSize(14);
 }
 
 function draw() {
-  background(120);
-  fill(140);
+  background(240);
 
+  // contact sheet: every pose, side by side
   for (let i = 0; i < frames.length; i++) {
-    let xPosition = i * 100;
-    image(frames[i], xPosition, 20, 100, 125);
+    image(frames[i], i * 85, 0, 80, 100);
   }
 
-  fill("black");
-  let speed = 10;
-  let slowFrame = floor(frameCount / speed);
-  let index = slowFrame % 2;
+  // click-controlled dancer
+  image(frames[index], 20, 140, 160, 200);
+  fill(0);
+  text("click: frames[" + index + "]", 20, 370);
 
-  text(frameCount, 500, 60);
-   text(floor(frameCount / speed), 500, 80);
-   text(index, 500, 120);
-   text(index == 0, 500, 140);
-  console.log(index);
-  if (index == 0) {
-    image(frames[0], 100, 100);
-  } else {
-    image(frames[1], 100, 100);
+  // one loop draws every dancer, each at its own x and speed
+  for (let i = 0; i < xs.length; i++) {
+    let pose = floor(frameCount / speeds[i]) % frames.length;
+    image(frames[pose], xs[i], 140, 160, 200);
   }
+}
+
+// advance the index, wrapping at the end
+function mousePressed() {
+  index = (index + 1) % frames.length;
 }
